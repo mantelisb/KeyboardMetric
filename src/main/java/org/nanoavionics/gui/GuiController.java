@@ -31,7 +31,7 @@ public class GuiController {
     }
 
     private void addTypingArea() {
-        typingArea = new JTextField(40);
+        typingArea = new JTextField(150);
         typingArea.addKeyListener(KeyboardListenerService.getInstance());
 
         frame.add(typingArea, BorderLayout.PAGE_START);

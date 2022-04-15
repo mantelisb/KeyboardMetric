@@ -1,5 +1,7 @@
 package org.nanoavionics.service;
 
+import org.nanoavionics.domain.KeyboardStatus;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.LinkedList;
@@ -8,22 +10,9 @@ public class KeyboardListenerService implements KeyListener {
 
     private final static KeyboardListenerService INSTANCE = new KeyboardListenerService();
 
-    private boolean sessionStarted;
-    private boolean wordFinished;
+    private KeyboardStatus keyboardStatus = KeyboardStatus.READY;
 
-    public void listenForNewWord() {
-         wordFinished = false;
-         typedCharacters = new LinkedList<>();
-    }
-    public boolean isWordFinished() {
-        return wordFinished;
-    }
-
-    public LinkedList<Character> getTypedCharacters() {
-        return typedCharacters;
-    }
-
-    private LinkedList<Character> typedCharacters = new LinkedList<>();
+    private LinkedList<KeyEvent> typedCharacters = new LinkedList<>();
 
     private KeyboardListenerService() {
     }
@@ -34,25 +23,45 @@ public class KeyboardListenerService implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (!sessionStarted && !wordFinished) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                wordFinished = true;
-            } else {
-                typedCharacters.add(e.getKeyChar());
+        switch (keyboardStatus) {
+            case READY -> typedCharacters.add(e);
+            case GATHERING_INFO -> {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    keyboardStatus = KeyboardStatus.INFO_GATHERED;
+                } else {
+                    typedCharacters.add(e);
+                }
             }
-            System.out.println(typedCharacters);
         }
+    }
 
-        System.out.println(e);
+    public boolean isGatheringInfo() {
+        return KeyboardStatus.GATHERING_INFO.equals(keyboardStatus);
+    }
+
+    public void startGatheringInfo() {
+        keyboardStatus = KeyboardStatus.GATHERING_INFO;
+        typedCharacters.clear();
+    }
+
+    public void resetKeyboardStatus() {
+        keyboardStatus = KeyboardStatus.READY;
+        typedCharacters.clear();
+    }
+
+    public LinkedList<KeyEvent> getTypedCharacters() {
+        return typedCharacters;
+    }
+
+    public void clearTypedCharacters() {
+        typedCharacters.clear();
     }
 }
