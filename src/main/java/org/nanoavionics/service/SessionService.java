@@ -16,8 +16,6 @@ public class SessionService {
     private GuiController guiController;
     private KeyboardListenerService keyboardListenerService = KeyboardListenerService.getInstance();
 
-    private int lastIntervalEnd;
-
     public SessionService(GuiController guiController) {
         this.guiController = guiController;
     }
@@ -36,6 +34,7 @@ public class SessionService {
     private void startSession(Integer typingIntervalInSeconds, Integer sessionDurationInSeconds) throws InterruptedException {
         var nextIntervalEndInSeconds = typingIntervalInSeconds;
         var previousIntervalMetric = "";
+        var lastIntervalEnd = 0;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -85,7 +84,7 @@ public class SessionService {
                 findTop3Characters(lastIntervalTypedCharacters));
     }
 
-    private String findTop3Characters(List<KeyEvent> lastIntervalTypedCharacters) {
+    String findTop3Characters(List<KeyEvent> lastIntervalTypedCharacters) {
         return lastIntervalTypedCharacters
                 .stream()
                 .map(keyEvent -> new Key(keyEvent.getKeyChar(), keyEvent.getKeyCode()))
@@ -100,7 +99,7 @@ public class SessionService {
     }
 
 
-    private boolean lastTypedWordMatches(String lastWord) {
+    boolean lastTypedWordMatches(String lastWord) {
         var descendingIterator = keyboardListenerService.getTypedCharacters().descendingIterator();
 
         for (int i = lastWord.length() - 1; i >= 0 && descendingIterator.hasNext(); i--) {

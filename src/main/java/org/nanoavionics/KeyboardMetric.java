@@ -18,7 +18,7 @@ public class KeyboardMetric {
         new KeyboardMetric(new GuiController()).start();
     }
 
-    private void start() throws InterruptedException {
+    void start() throws InterruptedException {
         var typingInterval = inputService.readTypingInterval();
         var sessionDuration = inputService.readSessionDuration();
 
